@@ -146,7 +146,7 @@ app.post("/api/book-appointment", async (req, res) => {
 
 
 app.post("/api/contact", async (req, res) => {
-  const { email, subject } = req.body;
+  const { email, message } = req.body;
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -165,7 +165,7 @@ app.post("/api/contact", async (req, res) => {
       html: `
         <h2>New Contact Message</h2>
         <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong> ${message}</p>
       `,
     });
 
@@ -176,7 +176,7 @@ app.post("/api/contact", async (req, res) => {
       subject: "Thanks for Contacting Us",
       html: `
         <h2>Hi,</h2>
-        <p>We received your message: <strong>${subject}</strong>.</p>
+        <p>We received your message: <strong>${message}</strong>.</p>
         <p>We'll respond shortly. Thanks for reaching out to CareWatch.</p>
       `,
     });
