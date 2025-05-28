@@ -94,103 +94,99 @@ app.post("/send-data-myportfolio", (req, res) => {
 
 
 
-app.post('/api/book-appointment', (req, res) => {
+app.post("/api/book-appointment", async (req, res) => {
   const { department, doctor, name, phone, email, date } = req.body;
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
-      user: 'awaisaggu1098@gmail.com',
-      pass: 'erzktvusjhffvzvz',
+      user: "awaisaggu1098@gmail.com",
+      pass: "erzktvusjhffvzvz",
     },
   });
 
-  const adminMailOptions = {
-    from: email,
-    to: 'awaisaggu1098@gmail.com',
-    subject: `New Appointment Booking from ${name}`,
-    html: `
-      <h2>New Appointment Request</h2>
-      <p><strong>Department:</strong> ${department}</p>
-      <p><strong>Doctor:</strong> ${doctor}</p>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Phone:</strong> ${phone}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Date:</strong> ${date}</p>
-    `,
-  };
-
-  const userMailOptions = {
-    from: 'awaisaggu1098@gmail.com',
-    to: email,
-    subject: 'Appointment Request Received',
-    html: `
-      <h2>Hi ${name},</h2>
-      <p>Thank you for booking an appointment with us. Here are the details:</p>
-      <p><strong>Department:</strong> ${department}</p>
-      <p><strong>Doctor:</strong> ${doctor}</p>
-      <p><strong>Date:</strong> ${date}</p>
-      <p>We'll contact you shortly to confirm your appointment.</p>
-      <p>— CareWatch Health Team</p>
-    `,
-  };
-
-  transporter.sendMail(adminMailOptions, (err, info) => {
-    if (err) return res.status(500).send('Error sending admin email');
-
-    transporter.sendMail(userMailOptions, (err2, info2) => {
-      if (err2) return res.status(500).send('Error sending confirmation to user');
-      res.status(200).send('Appointment request sent successfully');
+  try {
+    // Send to Admin
+    await transporter.sendMail({
+      from: email,
+      to: "awaisaggu1098@gmail.com",
+      subject: `New Appointment Booking from ${name}`,
+      html: `
+        <h2>New Appointment Request</h2>
+        <p><strong>Department:</strong> ${department}</p>
+        <p><strong>Doctor:</strong> ${doctor}</p>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Date:</strong> ${date}</p>
+      `,
     });
-  });
+
+    // Confirmation to User
+    await transporter.sendMail({
+      from: "awaisaggu1098@gmail.com",
+      to: email,
+      subject: "Appointment Request Received",
+      html: `
+        <h2>Hi ${name},</h2>
+        <p>Thanks for booking your appointment. Here's a summary:</p>
+        <p><strong>Department:</strong> ${department}</p>
+        <p><strong>Doctor:</strong> ${doctor}</p>
+        <p><strong>Date:</strong> ${date}</p>
+        <p>We’ll contact you soon to confirm. Thanks for choosing CareWatch.</p>
+      `,
+    });
+
+    res.status(200).send("Appointment email sent to both admin and user");
+  } catch (error) {
+    console.error("Email sending error:", error);
+    res.status(500).send("Failed to send appointment emails");
+  }
 });
 
 
-app.post('/api/contact', (req, res) => {
+app.post("/api/contact", async (req, res) => {
   const { email, subject } = req.body;
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
-      user: 'awaisaggu1098@gmail.com',
-      pass: 'erzktvusjhffvzvz',
+      user: "awaisaggu1098@gmail.com",
+      pass: "erzktvusjhffvzvz",
     },
   });
 
-  const adminMailOptions = {
-    from: email,
-    to: 'awaisaggu1098@gmail.com',
-    subject: `New Contact Submission`,
-    html: `
-      <h2>New Contact Message</h2>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Subject:</strong> ${subject}</p>
-    `,
-  };
-
-  const userMailOptions = {
-    from: 'awaisaggu1098@gmail.com',
-    to: email,
-    subject: 'Thanks for Contacting Us',
-    html: `
-      <h2>Hi,</h2>
-      <p>Thanks for reaching out! We received your message: <strong>${subject}</strong>.</p>
-      <p>We’ll respond to you shortly.</p>
-      <p>— CareWatch Health Team</p>
-    `,
-  };
-
-  transporter.sendMail(adminMailOptions, (err, info) => {
-    if (err) return res.status(500).send('Error sending to admin');
-
-    transporter.sendMail(userMailOptions, (err2, info2) => {
-      if (err2) return res.status(500).send('Error sending to user');
-      res.status(200).send('Contact message sent successfully');
+  try {
+    // Send to Admin
+    await transporter.sendMail({
+      from: email,
+      to: "awaisaggu1098@gmail.com",
+      subject: "New Contact Submission",
+      html: `
+        <h2>New Contact Message</h2>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+      `,
     });
-  });
+
+    // Send to User
+    await transporter.sendMail({
+      from: "awaisaggu1098@gmail.com",
+      to: email,
+      subject: "Thanks for Contacting Us",
+      html: `
+        <h2>Hi,</h2>
+        <p>We received your message: <strong>${subject}</strong>.</p>
+        <p>We'll respond shortly. Thanks for reaching out to CareWatch.</p>
+      `,
+    });
+
+    res.status(200).send("Contact email sent to both admin and user");
+  } catch (error) {
+    console.error("Email sending error:", error);
+    res.status(500).send("Failed to send contact emails");
+  }
 });
-
-
 
 
 
